@@ -11,7 +11,9 @@
 		"sequelize":"~1.7.0-rc8",
 		"pg":"~3.2.0",
 		"mustache-express":"*",
-		"sequelize":"*"
+		"sequelize":"*",
+		"passport-google-oauth":"",
+		"passport":"*"
 	},
 	"engines":{
 		"node":"0.10.x",
