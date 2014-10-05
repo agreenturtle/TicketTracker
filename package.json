@@ -1,6 +1,6 @@
 {
 	"name":"TicketTracker",
-	"version":"1.0.0",
+	"version":"",
 	"description":"",
 	"main":"server.js",
 	"dependencies":{

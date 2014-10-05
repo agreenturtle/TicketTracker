@@ -5,7 +5,7 @@ var bodyParser = require("body-parser");
 var Sequelize = require("sequelize");
 var mysql = require("mysql2");
 
-var models = require(".models");
+var models = require("./models");
 
 var app = express();
 
