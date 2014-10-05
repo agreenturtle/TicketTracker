@@ -6,6 +6,8 @@ var Sequelize = require("sequelize");
 var mysql = require("mysql2");
 var GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 var passport = require("passport");
+var cookieParser = require("cookie-parser");
+var expressSession = require("express-session");
 
 var models = require("./models");
 
@@ -23,10 +25,25 @@ app.use(methodOverride());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static(__dirname + "/public"));
+app.use(passport.initialize());
 
-var GOOGLE_CLIENT_ID = process.env.USERHUB_GOOGLE_CLIENT_ID;
-var GOOGLE_CLIENT_SECRET = process.env.USERHUB_GOOGLE_CLIENT_SECRET;
-var GOOGLE_CALLBACK = "http://userhub.herokuapp.com/oauth2callback";
+//app.use for creating a session
+app.use(cookieParser());
+app.use(expressSession({secret: "TICKET_TRACKER_SECRET"}));
+
+var TEST = true;
+if(TEST)
+{
+	var GOOGLE_CLIENT_ID = process.env.TICKET_TRACKER_LOCAL_CLIENT_ID;
+	var GOOGLE_CLIENT_SECRET = process.env.TICKET_TRACKER_LOCAL_CLIENT_SECRET;
+	var GOOGLE_CALLBACK = "http://localhost:3000/oauth2callback";
+}
+else
+{
+	var GOOGLE_CLIENT_ID = process.env.TICKET_TRACKER_HEROKU_CLIENT_ID;
+	var GOOGLE_CLIENT_SECRET = process.env.TICKET_TRACKER_HEROKU_CLIENT_SECRET;
+	var GOOGLE_CALLBACK = "http://secure-scrubland-4576.herokuapp.com/oauth2callback";
+}
 
 var WHITE_LIST = ["james@thrivesmart.com"];
 
@@ -45,13 +62,13 @@ passport.use(new GoogleStrategy({
 	},
 	function(accessToken, refreshToken, profile, done) {
 		//only allow certain people to view the database
-		if(profile._json.email == WHITE_LIST[0] || profile._json.email == WHITE_LIST[1] || profile._json.email == WHITE_LIST[2]){
-			//console.log(profile._json.email);
-			return done(null, profile);
+		for(var i = 0; i < WHITE_LIST.length; i++){
+			if(profile._json.email == WHITE_LIST[i]){
+				//console.log(profile._json.email);
+				return done(null, profile);
+			}
 		}
-		else{
-			return done();
-		}
+		return done();
 	}
 ));
 
@@ -73,7 +90,12 @@ app.get("/invalid-email",function(req,res){
 });
 
 app.get("/index", function(req, res){
-	res.render("index", null);
+	if(req.session.name == "admin"){
+		res.render("index", null);
+	}
+	else{
+		res.render("invalid-email", null);
+	}
 });
 
 app.listen(app.get("port"), function(){

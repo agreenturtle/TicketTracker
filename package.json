@@ -13,7 +13,9 @@
 		"mustache-express":"*",
 		"sequelize":"*",
 		"passport-google-oauth":"",
-		"passport":"*"
+		"passport":"*",
+		"cookie-parser":"*",
+		"express-session":"*"
 	},
 	"engines":{
 		"node":"0.10.x",
